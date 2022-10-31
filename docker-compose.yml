@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  productservice:
+    container_name: "thirumathikart_productservice"
+    image: "thirumathikart_productservice"
+    build:
+      context: .
+      target: ${TARGET}
+    ports:
+      - ${SERVER_PORT}:8000
+    volumes:
+      - .:/app
+
+  productdb:
+    container_name: "thirumathikart_productdb"
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./pg_db:/data/postgres
+
+  productadminer:
+    container_name: "adminer_productdb"
+    image: adminer
+    restart: always
+    ports:
+      - ${ADMINER_PORT}:8080
