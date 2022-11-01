@@ -8,7 +8,7 @@ func MigrateDB() {
 	db := config.GetDB()
 
 	for _, model := range []interface{}{
-		// Add models here
+		&Product{},
 	} {
 		if err := db.AutoMigrate(&model); err != nil {
 			panic(err)
