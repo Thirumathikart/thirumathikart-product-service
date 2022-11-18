@@ -11,6 +11,7 @@ services:
       - ${SERVER_PORT}:8000
     volumes:
       - .:/app
+      - ./product_images:/app/product_images
 
   productdb:
     container_name: "thirumathikart_productdb"

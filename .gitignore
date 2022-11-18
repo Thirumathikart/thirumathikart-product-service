@@ -1,7 +1,7 @@
+# Secrets
 .env
-server
-config.json
-mysql_db
-docker-data-mysql
 .vscode
+
+# Docker Volumes
 pg_db
+product_images
