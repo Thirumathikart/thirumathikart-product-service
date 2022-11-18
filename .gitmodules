@@ -1,0 +1,3 @@
+[submodule "thirumathikart-protos"]
+	path = thirumathikart-protos
+	url = https://github.com/Thirumathikart/thirumathikart-protos
