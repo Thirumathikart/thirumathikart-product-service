@@ -9,6 +9,7 @@ func MigrateDB() {
 
 	for _, model := range []interface{}{
 		&Product{},
+		&ProductImage{},
 	} {
 		if err := db.AutoMigrate(&model); err != nil {
 			panic(err)

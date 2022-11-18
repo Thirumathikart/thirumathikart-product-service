@@ -12,6 +12,11 @@ type Product struct {
 	Price       int    `gorm:"default:0;"`
 	Description string `gorm:"default:null;"`
 	Stock       int    `gorm:"default:0;"`
-	ImageURL    string `gorm:"default:null;"`
-	IsAvailable bool   `gorm:"default:true;"`
+}
+
+type ProductImage struct {
+	gorm.Model
+	ProductID uint
+	Product   Product
+	ImageURL  string `gorm:"default:null;"`
 }
