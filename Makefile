@@ -6,3 +6,6 @@ run: build
 
 watch:
 	reflex -s -r '\.go$$' make run
+
+proto:
+	protoc -I ./protos/ ./protos/**/*.proto --go_out=./rpcs --go-grpc_out=./rpcs

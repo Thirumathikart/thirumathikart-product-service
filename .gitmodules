@@ -1,3 +1,4 @@
-[submodule "thirumathikart-protos"]
-	path = thirumathikart-protos
+[submodule "protos"]
+	path = protos
 	url = https://github.com/Thirumathikart/thirumathikart-protos
+    branch = products
