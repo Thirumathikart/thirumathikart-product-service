@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -8,22 +9,62 @@ import (
 	"github.com/thirumathikart/thirumathikart-product-service/models"
 )
 
-func ListProductsBySeller(sellerID int) []models.Product {
-	db := config.GetDB()
-	var products []models.Product
-	db.Find(&products, "seller_id = ?", sellerID)
-	return products
+type productsResponse struct {
+	products []models.Product
 }
 
-func ListProductsByCategory(categoryID int) []models.Product {
+type productResponse struct {
+	product models.Product
+}
+
+func ListProductsBySeller(c echo.Context) error {
 	db := config.GetDB()
+	sellerID := c.QueryParam("seller")
+	if sellerID == "" {
+		return echo.NewHTTPError(400, "Product ID is required")
+	}
+	var products []models.Product
+	db.Find(&products, "seller_id = ?", sellerID)
+	productsList := productsResponse{
+		products: products,
+	}
+	return c.JSONPretty(http.StatusOK, productsList, "  ")
+}
+
+func ListProductsByCategory(c echo.Context) error {
+	db := config.GetDB()
+	categoryID := c.QueryParam("category")
+	if categoryID == "" {
+		return echo.NewHTTPError(400, "Category ID is required")
+	}
 	var products []models.Product
 	db.Find(&products, "category_id = ?", categoryID)
-	return products
+	productsList := productsResponse{
+		products: products,
+	}
+	return c.JSONPretty(http.StatusOK, productsList, "  ")
+}
+
+func UpdateProductStock(c echo.Context) error {
+	db := config.GetDB()
+	productID := c.Param("id")
+	if productID == "" {
+		return echo.NewHTTPError(400, "Product ID is required")
+	}
+	stock, err := strconv.Atoi(c.Param("stock"))
+	if err != nil {
+		return err
+	}
+	var product models.Product
+	db.First(&product, productID)
+	product.Stock = stock
+	db.Save(&product)
+	return c.HTML(http.StatusOK, "")
 }
 
 func CreateProduct(c echo.Context) error {
 	db := config.GetDB()
+	//  Check if User is seller
 	form, err := c.MultipartForm()
 	if err != nil {
 		return err
@@ -58,5 +99,50 @@ func CreateProduct(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return c.HTML(http.StatusOK, "")
+}
+
+func DeleteProduct(c echo.Context) error {
+	db := config.GetDB()
+	// Check if User is seller
+	productID := c.Param("product_id")
+	if productID == "" {
+		return echo.NewHTTPError(400, "Product ID is required")
+	}
+	var product models.Product
+	db.First(&product, productID)
+	db.Delete(&product)
+	return c.HTML(http.StatusOK, "")
+}
+
+func GetProductDetails(c echo.Context) error {
+	db := config.GetDB()
+	productID := c.FormValue("product_id")
+	if productID == "" {
+		return echo.NewHTTPError(400, "Product ID is required")
+	}
+	var product models.Product
+	db.First(&product, productID)
+	productDetails := productResponse{
+		product: product,
+	}
+	return c.JSONPretty(http.StatusOK, productDetails, "  ")
+}
+
+func UpdateProductPrice(c echo.Context) error {
+	db := config.GetDB()
+	// Check if User is seller
+	productID := c.Param("product_id")
+	if productID == "" {
+		return echo.NewHTTPError(400, "Product ID is required")
+	}
+	price, err := strconv.Atoi(c.Param("price"))
+	if err != nil {
+		return err
+	}
+	var product models.Product
+	db.First(&product, productID)
+	product.Price = price
+	db.Save(&product)
+	return c.HTML(http.StatusOK, "")
 }
