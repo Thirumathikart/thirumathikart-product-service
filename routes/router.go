@@ -17,4 +17,6 @@ func Init(e *echo.Echo) {
 	e.POST("/delete_product", controllers.DeleteProduct)
 	e.POST("/update_product_price", controllers.UpdateProductPrice)
 	e.POST("/get_product_details", controllers.GetProductDetails)
+	e.POST("/update_product_title", controllers.UpdateProductTitle)
+	e.POST("update_product_description", controllers.UpdateProductDescription)
 }
