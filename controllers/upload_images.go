@@ -1,12 +1,11 @@
 package controllers
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/thirumathikart/thirumathikart-product-service/models"
 	"gorm.io/gorm"
@@ -22,25 +21,14 @@ func UploadProductImage(files []*multipart.FileHeader, productID uint, db *gorm.
 			return err
 		}
 		defer src.Close()
-		hash := sha256.New()
-		if _, err := io.Copy(hash, src); err != nil {
-			return err
-		}
-		if _, err := io.Copy(hash, src); err != nil {
-			return err
-		}
-		srcCopy, err := file.Open()
-		if err != nil {
-			return err
-		}
-		defer srcCopy.Close()
-		filePath := filepath.Join("product_images", hex.EncodeToString(hash.Sum(nil))+".jpg")
+
+		filePath := filepath.Join("product_images", strconv.FormatUint(uint64(productID), 10)+".jpg")
 		dst, err := os.Create(filePath)
 		if err != nil {
 			return err
 		}
 		defer dst.Close()
-		if _, err = io.Copy(dst, srcCopy); err != nil {
+		if _, err = io.Copy(dst, src); err != nil {
 			return err
 		}
 
