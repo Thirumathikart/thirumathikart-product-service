@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -14,12 +16,9 @@ func ListProductsBySeller(c echo.Context) error {
 	if sellerID == "" {
 		return echo.NewHTTPError(400, "Product ID is required")
 	}
-	var products []models.Product
-	db.Find(&products, "seller_id = ?", sellerID)
-	productsList := ListProductsResponse{
-		products: products,
-	}
-	return c.JSONPretty(http.StatusOK, productsList, "  ")
+	var products []models.ProductImage
+	db.Preload("Product","seller_id = ?",sellerID).Find(&products)
+	return c.JSONPretty(http.StatusOK, products, "  ")
 }
 
 func ListProductsByCategory(c echo.Context) error {
@@ -28,10 +27,9 @@ func ListProductsByCategory(c echo.Context) error {
 	if categoryID == "" {
 		return echo.NewHTTPError(400, "Category ID is required")
 	}
-	var products []models.Product
-	db.Find(&products, "category_id = ?", categoryID)
-	productsList := ListProductsResponse{
-		products: products,
-	}
-	return c.JSONPretty(http.StatusOK, productsList, "  ")
+	var products []models.ProductImage
+	db.Preload("Product","category_id = ?",categoryID).Find(&products)
+	log.Printf("%d rows found.", len(products))
+	fmt.Println(products)
+	return c.JSONPretty(http.StatusOK, products," ")
 }

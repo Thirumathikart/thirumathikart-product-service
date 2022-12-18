@@ -76,10 +76,7 @@ func GetProductDetails(c echo.Context) error {
 	if productID == "" {
 		return echo.NewHTTPError(400, "Product ID is required")
 	}
-	var product models.Product
-	db.First(&product, productID)
-	productDetails := SingleProductResponse{
-		product: product,
-	}
-	return c.JSONPretty(http.StatusOK, productDetails, "  ")
+	var product models.ProductImage
+	db.Preload("Product","id = ?",productID).First(&product)
+	return c.JSONPretty(http.StatusOK, product, "  ")
 }

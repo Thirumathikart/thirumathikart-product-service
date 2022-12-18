@@ -17,9 +17,13 @@ func UpdateProduct(c echo.Context) error {
 	if err != nil {
 		return middlewares.SendResponse(c, http.StatusBadRequest, "Bad Request")
 	}
+	form, err := c.MultipartForm()
+	if err != nil {
+		return err
+	}
 	db := config.GetDB()
 	request := new(models.UpdateProduct)
-	if err := c.Bind(request); err != nil {
+	if err := c.Bind(&request); err != nil {
 		return err
 	}
 	var product models.Product
@@ -43,6 +47,12 @@ func UpdateProduct(c echo.Context) error {
 	if res.Error != nil {
 		log.Println(res.Error)
 		return c.JSON(http.StatusBadGateway, "Bad Request")
+	}
+	db.Create(&product)
+	files := form.File["files"]
+	err = UpdateProductImages(files, product.ID, db)
+	if err != nil {
+		return err
 	}
 	return c.JSON(http.StatusOK, "success")
 }

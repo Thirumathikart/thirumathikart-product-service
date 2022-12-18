@@ -99,3 +99,56 @@ func UploadProductImages(files []*multipart.FileHeader, productID uint, db *gorm
 	// Create Product with Product ID and product images
 	return nil
 }
+
+func UpdateProductImages(files []*multipart.FileHeader, productID uint, db *gorm.DB) error {
+
+	// Get Product ID and validate with seller ID
+	for _, file := range files {
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer src.Close()
+		hash := sha256.New()
+		if _, err := io.Copy(hash, src); err != nil {
+			log.Println("1")
+			log.Println(err)
+			return err
+		}
+		if _, err := io.Copy(hash, src); err != nil {
+			log.Println("2")
+			log.Println(err)
+			return err
+		}
+		srcCopy, err := file.Open()
+		if err != nil {
+			log.Println("3")
+			log.Println(err)
+			return err
+		}
+		defer srcCopy.Close()
+		filePath := filepath.Join("product_images", hex.EncodeToString(hash.Sum(nil))+".jpeg")
+		log.Println(filePath)
+		dst, err := os.Create(filePath)
+		if err != nil {
+			log.Println("4")
+			log.Println(err)
+			return err
+		}
+		defer dst.Close()
+		if _, err = io.Copy(dst, srcCopy); err != nil {
+			log.Println("5")
+			log.Println(err)
+			return err
+		}
+
+		var productImage models.ProductImage
+		if err:=db.First(&productImage,"id = ?",productID);err!=nil{
+			return err.Error
+		}
+		productImage.ImageURL =filePath
+	}
+
+	// Create Product with Product ID and product images
+	return nil
+}
