@@ -1,17 +1,51 @@
 package controllers
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strconv"
 
+	"github.com/labstack/echo/v4"
 	"github.com/thirumathikart/thirumathikart-product-service/models"
 	"gorm.io/gorm"
 )
 
-func UploadProductImage(files []*multipart.FileHeader, productID uint, db *gorm.DB) error {
+func UploadProductImage(c echo.Context, productID uint, db *gorm.DB) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return err
+	}
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Destination
+	hash := sha256.New()
+	path := "product_images" + hex.EncodeToString(hash.Sum(nil)) + ".jpg"
+	dst, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	productImage := models.ProductImage{
+		ProductID: productID,
+		ImageURL:  path,
+	}
+	db.Create(&productImage)
+	return nil
+}
+
+func UploadProductImages(files []*multipart.FileHeader, productID uint, db *gorm.DB) error {
 
 	// Get Product ID and validate with seller ID
 
@@ -21,14 +55,25 @@ func UploadProductImage(files []*multipart.FileHeader, productID uint, db *gorm.
 			return err
 		}
 		defer src.Close()
-
-		filePath := filepath.Join("product_images", strconv.FormatUint(uint64(productID), 10)+".jpg")
+		hash := sha256.New()
+		if _, err := io.Copy(hash, src); err != nil {
+			return err
+		}
+		if _, err := io.Copy(hash, src); err != nil {
+			return err
+		}
+		srcCopy, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer srcCopy.Close()
+		filePath := filepath.Join("product_images", hex.EncodeToString(hash.Sum(nil))+".jpg")
 		dst, err := os.Create(filePath)
 		if err != nil {
 			return err
 		}
 		defer dst.Close()
-		if _, err = io.Copy(dst, src); err != nil {
+		if _, err = io.Copy(dst, srcCopy); err != nil {
 			return err
 		}
 
