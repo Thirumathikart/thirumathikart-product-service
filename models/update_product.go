@@ -7,5 +7,5 @@ type UpdateProduct struct {
 	SellerID    int    `json:"seller_id"`
 	Price       int    `json:"price"`
 	Description string `json:"description"`
-	Stock       int    `json:"stock;"`
+	Stock       int    `json:"stock"`
 }

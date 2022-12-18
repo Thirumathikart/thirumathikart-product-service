@@ -21,28 +21,45 @@ func UpdateProduct(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	db := config.GetDB()
-	request := new(models.UpdateProduct)
-	if err := c.Bind(&request); err != nil {
+	categoryID, err := strconv.Atoi(c.FormValue("category_id"))
+	if err != nil {
 		return err
 	}
+	price, err := strconv.Atoi(c.FormValue("price"))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	stock, err := strconv.Atoi(c.FormValue("stock"))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	productID, err := strconv.Atoi(c.FormValue("id"))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	db := config.GetDB()
 	var product models.Product
-	res := db.Where("id = ?", request.ID).First(&product)
+	res := db.Where("id = ?", productID).First(&product)
 	if res.Error != nil {
 		log.Println(res.Error)
 		return c.JSON(http.StatusBadGateway, "Bad Request")
 	}
+	log.Println("product:", product)
+	log.Println("userDetails:", userDetails)
 	if product.SellerID != int(userDetails.UserId) {
 		log.Println(res.Error)
 		return c.JSON(http.StatusUnauthorized, "Seller Unauthorized")
 	}
 	res = db.Model(&product).Updates(
 		models.Product{
-			Title:       request.Title,
-			CategoryID:  request.CategoryID,
-			Price:       request.Price,
-			Description: request.Description,
-			Stock:       request.Stock,
+			Title:       c.FormValue("title"),
+			CategoryID:  categoryID,
+			Price:       price,
+			Description: c.FormValue("description"),
+			Stock:       stock,
 		})
 	if res.Error != nil {
 		log.Println(res.Error)

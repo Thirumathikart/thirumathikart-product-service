@@ -25,7 +25,7 @@ func Serve() {
 	e := echo.New()
 	middlewares.InitLogger(e)
 	e.Use(middleware.CORS())
-	e.Static("/static", "product_images")
+	e.Static("/product_images", "product_images")
 
 	// Routes
 	e.POST("/create_product", middlewares.Authenticator(controllers.CreateProduct))
