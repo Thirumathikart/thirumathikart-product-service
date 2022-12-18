@@ -57,6 +57,17 @@ func CreateProduct(c echo.Context) error {
 	return c.JSON(http.StatusOK, "success")
 }
 
+func GetProductDetails(c echo.Context) error {
+	db := config.GetDB()
+	productID := c.FormValue("product_id")
+	if productID == "" {
+		return echo.NewHTTPError(400, "Product ID is required")
+	}
+	var product models.ProductImage
+	db.Preload("Product","id = ?",productID).First(&product)
+	return c.JSONPretty(http.StatusOK, product, "  ")
+}
+
 func DeleteProduct(c echo.Context) error {
 	db := config.GetDB()
 	// Check if User is seller
@@ -70,13 +81,16 @@ func DeleteProduct(c echo.Context) error {
 	return c.HTML(http.StatusOK, "")
 }
 
-func GetProductDetails(c echo.Context) error {
-	db := config.GetDB()
-	productID := c.FormValue("product_id")
-	if productID == "" {
-		return echo.NewHTTPError(400, "Product ID is required")
+func GetProductsOfSeller(c echo.Context) error {
+	userDetails, err := utils.GetUserDetails(c)
+	if err != nil {
+		return middlewares.SendResponse(c, http.StatusBadRequest, "Bad Request")
 	}
-	var product models.ProductImage
-	db.Preload("Product","id = ?",productID).First(&product)
-	return c.JSONPretty(http.StatusOK, product, "  ")
+
+	db := config.GetDB()
+	sellerID := int(userDetails.UserId)
+	
+	var products []models.ProductImage
+	db.Preload("Product","seller_id = ?",sellerID).Find(&products)
+	return c.JSONPretty(http.StatusOK, products, "  ")
 }

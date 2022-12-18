@@ -31,6 +31,7 @@ func Serve() {
 	e.POST("/create_product", middlewares.Authenticator(controllers.CreateProduct))
 	e.GET("/list_products_by_seller", controllers.ListProductsBySeller)
 	e.GET("/list_products_by_category", controllers.ListProductsByCategory)
+	e.GET("/get_seller_product", middlewares.Authenticator(controllers.GetProductsOfSeller))
 	e.POST("/update_product", middlewares.Authenticator(controllers.UpdateProduct))
 	e.POST("/delete_product", controllers.DeleteProduct)
 	e.POST("/update_product_price", controllers.UpdateProductPrice)
