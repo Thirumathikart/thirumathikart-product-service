@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -26,10 +27,12 @@ func CreateProduct(c echo.Context) error {
 	}
 	price, err := strconv.Atoi(c.FormValue("price"))
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	stock, err := strconv.Atoi(c.FormValue("stock"))
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	product := models.Product{
@@ -44,9 +47,10 @@ func CreateProduct(c echo.Context) error {
 	files := form.File["files"]
 	err = UploadProductImage(files, product.ID, db)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
-	return c.HTML(http.StatusOK, "")
+	return c.JSON(http.StatusOK, "success")
 }
 
 func DeleteProduct(c echo.Context) error {

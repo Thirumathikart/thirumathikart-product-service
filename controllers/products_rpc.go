@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/thirumathikart/thirumathikart-product-service/config"
+	"github.com/thirumathikart/thirumathikart-product-service/generated/products"
 	"github.com/thirumathikart/thirumathikart-product-service/models"
-	"github.com/thirumathikart/thirumathikart-product-service/rpcs/products"
 )
 
 type ProductRPCServer struct {
@@ -22,9 +22,9 @@ func (ProductRPCServer) GetProductsRPC(ctx context.Context, request *products.Ge
 		response = append(response, &products.Product{
 			ProductId:    uint32(product.ID),
 			SellerId:     uint32(product.SellerID),
-			CategoryId:   string(rune(product.CategoryID)),
+			CategoryId:   uint32(product.CategoryID),
 			ProductTitle: product.Title,
-			ProductPrice: string(rune(product.Price)),
+			ProductPrice: uint32(product.Price),
 		})
 	}
 	return &products.GetProductsResponse{Products: response}, err

@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/thirumathikart/thirumathikart-product-service/config"
 	"github.com/thirumathikart/thirumathikart-product-service/controllers"
+	"github.com/thirumathikart/thirumathikart-product-service/generated/products"
 	"github.com/thirumathikart/thirumathikart-product-service/middlewares"
-	"github.com/thirumathikart/thirumathikart-product-service/rpcs/products"
 	"google.golang.org/grpc"
 )
 
