@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -26,7 +27,7 @@ func UploadProductImage(c echo.Context, productID uint, db *gorm.DB) error {
 
 	// Destination
 	hash := sha256.New()
-	path := "product_images" + hex.EncodeToString(hash.Sum(nil)) + ".jpg"
+	path := "product_images/" + hex.EncodeToString(hash.Sum(nil)) + ".jpg"
 	dst, err := os.Create(path)
 	if err != nil {
 		return err
@@ -68,6 +69,7 @@ func UploadProductImages(files []*multipart.FileHeader, productID uint, db *gorm
 		}
 		defer srcCopy.Close()
 		filePath := filepath.Join("product_images", hex.EncodeToString(hash.Sum(nil))+".jpg")
+		log.Println(filePath)
 		dst, err := os.Create(filePath)
 		if err != nil {
 			return err

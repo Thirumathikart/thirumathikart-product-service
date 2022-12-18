@@ -13,7 +13,7 @@ import (
 func CreateProduct(c echo.Context) error {
 	db := config.GetDB()
 	//  Check if User is seller
-	_, err := c.MultipartForm()
+	form, err := c.MultipartForm()
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,8 @@ func CreateProduct(c echo.Context) error {
 		Stock:       stock,
 	}
 	db.Create(&product)
-	err = UploadProductImage(c, product.ID, db)
+	files := form.File["files"]
+	err = UploadProductImages(files, product.ID, db)
 	if err != nil {
 		log.Println(err)
 		return err
