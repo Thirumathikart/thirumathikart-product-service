@@ -8,7 +8,8 @@ services:
       context: .
       target: ${TARGET}
     ports:
-      - ${SERVER_PORT}:8000
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - ${RPC_PORT}:${RPC_PORT}
     volumes:
       - .:/app
       - ./product_images:/app/product_images
@@ -19,12 +20,13 @@ services:
     restart: always
     env_file:
       - .env
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    command: -p ${DB_PORT}
     volumes:
       - ./pg_db:/data/postgres
 
-  productadminer:
-    container_name: "adminer_productdb"
-    image: adminer
-    restart: always
-    ports:
-      - ${ADMINER_PORT}:8080
+networks: 
+  default: 
+    external: 
+      name: thirumathikart-network
