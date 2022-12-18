@@ -1,7 +1,8 @@
 package middlewares
 
 import (
-	"fmt"
+	"context"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,15 +12,19 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 func Authenticator(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		headers := c.Request().Header
 		userToken := headers.Get("Authorization")
+		log.Println(userToken)
 		if userToken == "" {
 			return SendResponse(c, http.StatusServiceUnavailable, "Unable to authorize try later")
 		}
+		md := metadata.New(map[string]string{"secret": "xxxx"})
+		ctx := metadata.NewOutgoingContext(context.Background(), md)
 		var opts []grpc.DialOption
 		opts = append(
 			opts,
@@ -27,11 +32,12 @@ func Authenticator(next echo.HandlerFunc) echo.HandlerFunc {
 			WithClientUnaryInterceptor())
 		conn, err := grpc.Dial(config.AuthService, opts...)
 		if err != nil {
-			fmt.Println("error in dial", err)
+			log.Println(err)
+			return SendResponse(c, http.StatusServiceUnavailable, "Unable to authorize try later")
 		}
 		defer conn.Close()
 		client := user.NewUserServiceClient(conn)
-		response, err := rpcs.AuthRPC(userToken, client)
+		response, err := rpcs.AuthRPC(ctx, userToken, client)
 		if err != nil {
 			return SendResponse(c, http.StatusBadRequest, "Error Occurred")
 		}

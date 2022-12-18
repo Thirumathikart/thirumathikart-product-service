@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/thirumathikart/thirumathikart-product-service/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -35,7 +36,7 @@ func serverInterceptor(ctx context.Context,
 		}
 	}
 
-	GrpcLog.Infof("Request - Method:%s\tDuration:%s\tError:%v\n",
+	config.GrpcLog.Infof("Request - Method:%s\tDuration:%s\tError:%v\n",
 		info.FullMethod,
 		time.Since(start),
 		err)

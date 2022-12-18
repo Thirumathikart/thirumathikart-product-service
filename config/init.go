@@ -4,4 +4,5 @@ func InitConfig() {
 	Environment()
 	ConnectDB()
 	MigrateDB()
+	GrpcLogger()
 }

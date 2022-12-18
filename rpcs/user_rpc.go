@@ -6,9 +6,10 @@ import (
 	"github.com/thirumathikart/thirumathikart-product-service/generated/user"
 )
 
-func AuthRPC(userToken string, client user.UserServiceClient) (*user.AuthResponse, error) {
+func AuthRPC(ctx context.Context, userToken string, client user.UserServiceClient) (*user.AuthResponse, error) {
 
-	return client.AuthRPC(context.Background(),
+	return client.AuthRPC(
+		ctx,
 		&user.AuthRequest{
 			UserToken: userToken,
 		})

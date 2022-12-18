@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/thirumathikart/thirumathikart-product-service/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -29,7 +30,7 @@ func clientInterceptor(
 	// Calls the invoker to execute RPC
 	err = invoker(ctx, method, req, reply, cc, opts...)
 	// Logic after invoking the invoker
-	GrpcLog.Infof("Invoked RPC method=%s; Duration=%s; Error=%v", method,
+	config.GrpcLog.Infof("Invoked RPC method=%s; Duration=%s; Error=%v", method,
 		time.Since(start), err)
 	return err
 }

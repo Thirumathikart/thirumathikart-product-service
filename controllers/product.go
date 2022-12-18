@@ -7,10 +7,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/thirumathikart/thirumathikart-product-service/config"
+	"github.com/thirumathikart/thirumathikart-product-service/middlewares"
 	"github.com/thirumathikart/thirumathikart-product-service/models"
+	"github.com/thirumathikart/thirumathikart-product-service/utils"
 )
 
 func CreateProduct(c echo.Context) error {
+
+	userDetails, err := utils.GetUserDetails(c)
+	if err != nil {
+		return middlewares.SendResponse(c, http.StatusBadRequest, "Bad Request")
+	}
+
 	db := config.GetDB()
 	//  Check if User is seller
 	form, err := c.MultipartForm()
@@ -18,10 +26,6 @@ func CreateProduct(c echo.Context) error {
 		return err
 	}
 	categoryID, err := strconv.Atoi(c.FormValue("category_id"))
-	if err != nil {
-		return err
-	}
-	sellerID, err := strconv.Atoi(c.FormValue("seller_id"))
 	if err != nil {
 		return err
 	}
@@ -38,7 +42,7 @@ func CreateProduct(c echo.Context) error {
 	product := models.Product{
 		Title:       c.FormValue("title"),
 		CategoryID:  categoryID,
-		SellerID:    sellerID,
+		SellerID:    int(userDetails.UserId),
 		Price:       price,
 		Description: c.FormValue("description"),
 		Stock:       stock,
