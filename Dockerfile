@@ -30,5 +30,7 @@ WORKDIR /
 
 COPY --from=build /app/server /app/entry.sh /app/.env  /
 
+RUN mkdir product_images
+
 ENTRYPOINT ["/entry.sh"]
 CMD ["./server"]

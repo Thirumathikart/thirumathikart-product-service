@@ -12,7 +12,7 @@ services:
       - ${RPC_PORT}:${RPC_PORT}
     volumes:
       - .:/app
-      - ./product_images:/app/product_images
+      - ./product_images:/product_images
 
   productdb:
     container_name: "thirumathikart_productdb"
