@@ -74,7 +74,7 @@ func UploadProductImages(files []*multipart.FileHeader, productID uint, db *gorm
 			return err
 		}
 		defer srcCopy.Close()
-		filePath := filepath.Join("product_images", hex.EncodeToString(hash.Sum(nil))+".jpg")
+		filePath := filepath.Join("product_images", hex.EncodeToString(hash.Sum(nil))+".jpeg")
 		log.Println(filePath)
 		dst, err := os.Create(filePath)
 		if err != nil {
