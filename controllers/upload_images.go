@@ -58,13 +58,19 @@ func UploadProductImages(files []*multipart.FileHeader, productID uint, db *gorm
 		defer src.Close()
 		hash := sha256.New()
 		if _, err := io.Copy(hash, src); err != nil {
+			log.Println("1")
+			log.Println(err)
 			return err
 		}
 		if _, err := io.Copy(hash, src); err != nil {
+			log.Println("2")
+			log.Println(err)
 			return err
 		}
 		srcCopy, err := file.Open()
 		if err != nil {
+			log.Println("3")
+			log.Println(err)
 			return err
 		}
 		defer srcCopy.Close()
@@ -72,10 +78,14 @@ func UploadProductImages(files []*multipart.FileHeader, productID uint, db *gorm
 		log.Println(filePath)
 		dst, err := os.Create(filePath)
 		if err != nil {
+			log.Println("4")
+			log.Println(err)
 			return err
 		}
 		defer dst.Close()
 		if _, err = io.Copy(dst, srcCopy); err != nil {
+			log.Println("5")
+			log.Println(err)
 			return err
 		}
 
