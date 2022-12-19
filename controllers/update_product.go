@@ -45,7 +45,7 @@ func UpdateProduct(c echo.Context) error {
 	res := db.Where("id = ?", productID).First(&product)
 	if res.Error != nil {
 		log.Println(res.Error)
-		return c.JSON(http.StatusBadGateway, "Bad Request")
+		return c.JSON(http.StatusBadGateway, "Bad Gateway")
 	}
 	log.Println("product:", product)
 	log.Println("userDetails:", userDetails)
@@ -61,6 +61,7 @@ func UpdateProduct(c echo.Context) error {
 			Description: c.FormValue("description"),
 			Stock:       stock,
 		})
+	log.Println(res)
 	if res.Error != nil {
 		log.Println(res.Error)
 		return c.JSON(http.StatusBadGateway, "Bad Request")
