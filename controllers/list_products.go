@@ -13,35 +13,29 @@ import (
 
 func ListProductsBySeller(c echo.Context) error {
 	db := config.GetDB()
-	sellerIDParam := c.QueryParam("seller")
-	if sellerIDParam == "" {
-		return echo.NewHTTPError(400, "Product ID is required")
-	}
-	sellerID, err := strconv.Atoi(sellerIDParam)
+	sellerID, err := strconv.Atoi(c.QueryParam("seller"))
 	if err != nil {
-		log.Panicln(err)
+		return err
 	}
-
 	var products []models.ProductImage
-	db.Preload("Product", "seller_id = ?", sellerID).Find(&products)
-	return c.JSONPretty(http.StatusOK, products, "  ")
+	if err:=db.Joins("JOIN products ON products.id = product_images.product_id").Where("products.seller_id = ?",sellerID).Preload("Product").Find(&products).Error;err!=nil{
+		return c.JSON(http.StatusInternalServerError," ")
+	}
+	return c.JSON(http.StatusOK, products)
 }
 
 func ListProductsByCategory(c echo.Context) error {
 	db := config.GetDB()
-	categoryIDParam := c.QueryParam("category")
-	log.Println("categroryID", categoryIDParam)
-	if categoryIDParam == "" {
-		return echo.NewHTTPError(400, "Category ID is required")
-	}
-	categoryID, err := strconv.Atoi(categoryIDParam)
+	categoryID, err := strconv.Atoi(c.QueryParam("category"))
 	if err != nil {
-		log.Panicln(err)
+		return err
 	}
-
 	var products []models.ProductImage
-	db.Where("Product", "category_id = ?", categoryID).Find(&products)
+	if err:=db.Joins("JOIN products ON products.id = product_images.product_id").Where("products.category_id = ?",categoryID).Preload("Product").Find(&products).Error;err!=nil{
+		return c.JSON(http.StatusInternalServerError," ")
+	}
+	//db.Preload("Product","category_id = ?",categoryID).Find(&products)
 	log.Printf("%d rows found.", len(products))
 	fmt.Println(products)
-	return c.JSONPretty(http.StatusOK, products, " ")
+	return c.JSONPretty(http.StatusOK, products," ")
 }

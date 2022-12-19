@@ -91,6 +91,8 @@ func GetProductsOfSeller(c echo.Context) error {
 	sellerID := int(userDetails.UserId)
 	
 	var products []models.ProductImage
-	db.Preload("Product","seller_id = ?",sellerID).Find(&products)
+	if err:=db.Joins("JOIN products ON products.id = product_images.product_id").Where("products.seller_id = ?",sellerID).Preload("Product").Find(&products).Error;err!=nil{
+		return c.JSON(http.StatusInternalServerError," ")
+	}
 	return c.JSONPretty(http.StatusOK, products, "  ")
 }
