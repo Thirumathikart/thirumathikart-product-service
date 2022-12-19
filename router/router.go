@@ -26,6 +26,7 @@ func Serve() {
 	middlewares.InitLogger(e)
 	e.Use(middleware.CORS())
 	e.Static("/product_images", "product_images")
+//	e.Static("/apks", "apk")
 
 	// Routes
 	e.POST("/create_product", middlewares.Authenticator(controllers.CreateProduct))
