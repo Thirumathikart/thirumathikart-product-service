@@ -143,10 +143,14 @@ func UpdateProductImages(files []*multipart.FileHeader, productID uint, db *gorm
 		}
 
 		var productImage models.ProductImage
-		if err:=db.First(&productImage,"id = ?",productID);err!=nil{
-			return err.Error
+		if err:=db.First(&productImage,"product_id = ?",productID).Error;err!=nil{
+			return err
 		}
 		productImage.ImageURL =filePath
+		if err:=db.Save(&productImage).Error;err!=nil{
+			return err
+		}
+		log.Println("Image Updated SuccessFully")
 	}
 
 	// Create Product with Product ID and product images

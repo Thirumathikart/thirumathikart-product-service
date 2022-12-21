@@ -66,11 +66,14 @@ func UpdateProduct(c echo.Context) error {
 		log.Println(res.Error)
 		return c.JSON(http.StatusBadGateway, "Bad Request")
 	}
-	db.Create(&product)
+	//db.Create(&product)
 	files := form.File["files"]
-	err = UpdateProductImages(files, product.ID, db)
-	if err != nil {
-		return err
+	if files!=nil{
+		log.Println("In Product Image")
+		err = UpdateProductImages(files, product.ID, db)
+		if err != nil {
+			return err
+		}
 	}
 	return c.JSON(http.StatusOK, "success")
 }
